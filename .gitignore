@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+node_modules/
+.next/
+dist/
+.env
+*.local
+pgdata/
+.venv/
+venv/

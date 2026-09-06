@@ -1,0 +1,31 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: clientbrain
+      POSTGRES_PASSWORD: clientbrain
+      POSTGRES_DB: clientbrain
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: ./apps/api
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  web:
+    build: ./apps/web
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
