@@ -1,10 +1,14 @@
-"""ClientBrain API — multi-tenant RAG core (Phase 1, no heavy deps)."""
+"""ClientBrain API — Phase 2: auth + billing + pgvector-ready."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import chat, ingest, system
+from app import db
+from app.config import settings
+from app.routes import admin, billing, chat, ingest, system
 
-app = FastAPI(title="ClientBrain API", version="0.1.0")
+db.init_db(settings.database_url)
+
+app = FastAPI(title="ClientBrain API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,8 +21,11 @@ app.add_middleware(
 app.include_router(system.router, prefix="/v1", tags=["system"])
 app.include_router(ingest.router, prefix="/v1", tags=["ingest"])
 app.include_router(chat.router, prefix="/v1", tags=["chat"])
+app.include_router(billing.router, prefix="/v1", tags=["billing"])
+app.include_router(admin.router, prefix="/v1", tags=["admin"])
 
 
 @app.get("/")
 def root():
-    return {"name": "ClientBrain API", "docs": "/docs", "health": "/v1/health"}
+    return {"name": "ClientBrain API", "version": "0.2.0",
+            "docs": "/docs", "health": "/v1/health", "backend": db.backend()}

@@ -5,3 +5,7 @@ pydantic-settings==2.*
 httpx==0.27.*
 beautifulsoup4==4.12.*
 python-dotenv==1.*
+psycopg[binary]==3.*
+stripe==10.*
+razorpay==1.4.*
+pytest==8.*

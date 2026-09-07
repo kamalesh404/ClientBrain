@@ -63,15 +63,19 @@ cd apps/api && pip install -r requirements.txt && uvicorn main:app --reload
 cd apps/web && npm install && npm run dev
 ```
 
-## 🔌 API
+## 🔌 API (Phase 2)
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| POST | `/v1/ingest/url` | ingest single URL |
-| POST | `/v1/ingest/text` | ingest raw text |
-| POST | `/v1/chat` | RAG chat with citations |
-| GET | `/v1/health` | health check |
-| GET | `/v1/stats` | usage metering (for billing) |
+| POST | `/v1/ingest/url` | ingest URL (X-API-Key, quota-checked) |
+| POST | `/v1/ingest/text` | ingest text (X-API-Key, quota-checked) |
+| POST | `/v1/chat` | RAG chat, 402 when quota hit |
+| GET | `/v1/stats?workspace=x` | usage + quota + remaining |
+| GET | `/v1/billing/plans` | free/pro/scale |
+| POST | `/v1/billing/razorpay/order` | order (MOCK without keys) |
+| POST | `/v1/billing/stripe/session` | session (MOCK without keys) |
+| POST | `/v1/billing/upgrade` | activate plan (demo/admin) |
+| POST | `/v1/admin/keys` | create API key (master key only) |
 
 Chat example:
 
@@ -89,8 +93,8 @@ curl -X POST localhost:8000/v1/chat -H "Content-Type: application/json" \
 ## 🗺️ Roadmap
 
 - [x] Phase 1: multi-tenant RAG core + widget + docker + CI
-- [ ] Phase 2: auth (NextAuth), Razorpay/Stripe, admin analytics
-- [ ] Phase 3: WhatsApp + voice + Hugo/Jekyll site importer
+- [x] Phase 2: API-key auth, quotas/metering, Razorpay/Stripe (mock+live), pgvector-ready, dashboard + DEPLOY.md
+- [ ] Phase 3: WhatsApp + voice + site importer + NextAuth login
 
 ## 👨‍💻 Author
 
