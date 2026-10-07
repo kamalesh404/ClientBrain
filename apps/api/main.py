@@ -4,11 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import db
 from app.config import settings
+from app.middleware import setup_middleware_and_exceptions
 from app.routes import admin, billing, chat, ingest, system
 
 db.init_db(settings.database_url)
 
 app = FastAPI(title="ClientBrain API", version="0.2.0")
+
+setup_middleware_and_exceptions(app)
 
 app.add_middleware(
     CORSMiddleware,
