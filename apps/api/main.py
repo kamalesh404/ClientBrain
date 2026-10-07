@@ -1,5 +1,5 @@
 """ClientBrain API — Phase 2: auth + billing + pgvector-ready."""
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import db
@@ -25,7 +25,23 @@ app.include_router(billing.router, prefix="/v1", tags=["billing"])
 app.include_router(admin.router, prefix="/v1", tags=["admin"])
 
 
+@app.get("/health", tags=["system"], summary="Service Health Check")
+def root_health():
+    return system.health()
+
+
+@app.get("/ready", tags=["system"], summary="Service Readiness Probe")
+def root_ready(response: Response):
+    return system.ready(response)
+
+
 @app.get("/")
 def root():
-    return {"name": "ClientBrain API", "version": "0.2.0",
-            "docs": "/docs", "health": "/v1/health", "backend": db.backend()}
+    return {
+        "name": "ClientBrain API",
+        "version": "0.2.0",
+        "docs": "/docs",
+        "health": "/v1/health",
+        "ready": "/v1/ready",
+        "backend": db.backend(),
+    }

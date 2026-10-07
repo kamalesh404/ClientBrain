@@ -19,8 +19,47 @@ _mem_store: dict[str, list[dict]] = defaultdict(list)
 _mem_usage: dict[str, dict] = defaultdict(lambda: {"messages": 0, "docs": 0, "tokens": 0})
 
 
+import time
+
+
 def backend() -> str:
     return _backend
+
+
+def check_connection() -> dict:
+    """Check database connectivity and responsiveness."""
+    start = time.perf_counter()
+    if _backend == "postgres":
+        try:
+            import psycopg
+            from app.config import settings
+            with psycopg.connect(settings.database_url, connect_timeout=3) as conn:
+                with conn.cursor() as cur:
+                    cur.execute("SELECT 1;")
+                    cur.fetchone()
+            latency_ms = round((time.perf_counter() - start) * 1000, 2)
+            return {
+                "status": "connected",
+                "backend": "postgres",
+                "responsive": True,
+                "latency_ms": latency_ms,
+            }
+        except Exception as e:
+            latency_ms = round((time.perf_counter() - start) * 1000, 2)
+            return {
+                "status": "error",
+                "backend": "postgres",
+                "responsive": False,
+                "latency_ms": latency_ms,
+                "error": str(e),
+            }
+    latency_ms = round((time.perf_counter() - start) * 1000, 2)
+    return {
+        "status": "ready",
+        "backend": "memory",
+        "responsive": True,
+        "latency_ms": latency_ms,
+    }
 
 
 def init_db(database_url: str = "") -> str:
