@@ -15,9 +15,14 @@ docker compose up --build
    - `clientbrain-db`: PostgreSQL 16 (enables pgvector via `CREATE EXTENSION vector`)
    - `clientbrain-api`: Docker → `apps/api`, env `DATABASE_URL` from DB,
      `MASTER_API_KEY`, `OPENAI_API_KEY`, Razorpay/Stripe keys.
+     Health Check Path: `/health` (or `/ready`).
    - `clientbrain-web`: Node → `apps/web`, env `NEXT_PUBLIC_API_URL=<api url>`.
-3. After deploy, create a client key:
+3. After deploy, check readiness & create a client key:
 ```bash
+# Verify API readiness and DB connectivity
+curl $API/ready
+
+# Create workspace API key
 curl -X POST $API/v1/admin/keys -H "X-API-Key: $MASTER_API_KEY" \
   -H "Content-Type: application/json" -d '{"workspace":"client1","plan":"pro"}'
 ```
