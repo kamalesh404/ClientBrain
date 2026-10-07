@@ -1,8 +1,10 @@
 """Central config — OpenAI-compatible, works with Ollama locally."""
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
     openai_api_key: str = "sk-change-me"
     openai_base_url: str = "https://api.openai.com/v1"
     embed_model: str = "text-embedding-3-small"
@@ -17,10 +19,6 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
     billing_enabled: bool = False  # set True when keys present
-
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
 
 
 settings = Settings()
